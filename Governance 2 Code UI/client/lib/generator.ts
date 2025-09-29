@@ -1,0 +1,42 @@
+export function makeGeneratedCode(sessions: number, successRate: number, queue: string) {
+  const lines: string[] = [];
+  lines.push('// Governance Policy Bundle');
+  lines.push('// Generated: ' + new Date().toISOString());
+  lines.push('');
+  lines.push('export interface GovernanceConfig {');
+  lines.push('  allowExternalIntegrations: boolean;');
+  lines.push('  maxConcurrentSessions: number;');
+  lines.push('  requiredApprovals: number;');
+  lines.push('}');
+  lines.push('');
+  lines.push('export const defaultGovernance: GovernanceConfig = {');
+  lines.push('  allowExternalIntegrations: false,');
+  lines.push('  maxConcurrentSessions: ' + Math.max(1, Math.floor(sessions * 1.2)) + ',');
+  lines.push('  requiredApprovals: ' + (successRate > 99 ? 1 : 2) + ',');
+  lines.push('};');
+  lines.push('');
+  lines.push('// Policy rules');
+  lines.push('export function evaluatePolicy(context: any) {');
+  lines.push('  // Queue status: ' + queue);
+  lines.push('  // Quick checks');
+  lines.push("  if (!context.user || !context.resource) {");
+  lines.push("    return { allowed: false, reason: 'invalid_request' };" );
+  lines.push('  }');
+  lines.push('');
+  lines.push('  // Example: compliance matrix check');
+  lines.push('  const riskScore = (context.risk || 0) + (context.legacy ? 10 : 0);');
+  lines.push('');
+  lines.push('  if (riskScore > 70) {');
+  lines.push("    return { allowed: false, reason: 'high_risk' };" );
+  lines.push('  }');
+  lines.push('');
+  lines.push("  return { allowed: true, reason: 'approved', audit: { generatedBy: 'Governance Code Generator' } };" );
+  lines.push('}');
+  lines.push('');
+  lines.push('// Export a textual summary');
+  lines.push('export function summary() {');
+  lines.push("  return 'Active Sessions: " + sessions + " | Success Rate: " + successRate + "% | Queue: " + queue + "';");
+  lines.push('}');
+
+  return lines.join('\n');
+}
